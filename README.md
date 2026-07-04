@@ -9,10 +9,55 @@ them. See
 [`evaluation-framework-spec.md`](./evaluation-framework-spec.md) for the spec and
 [`implementation-plan.md`](./implementation-plan.md) for build sequencing.
 
+## Quick start (pip)
+
+You have a handful of `.docx` files, parse them with Docling, and want to know
+what the parse got wrong. The harness never runs Docling itself — you produce
+the `DoclingDocument` JSON out-of-band (e.g. in the environment where docling
+is installed):
+
+```sh
+docling --to json --output dl/ my_document.docx     # out-of-band, not a harness dep
+```
+
+Then, in a fresh virtualenv:
+
+```sh
+pip install path/to/doc-parsing-evaluation-framework   # installs the docx-parse-eval CLI
+
+# 1. reference extraction straight from the OOXML (the "silver" draft record)
+docx-parse-eval bootstrap my_document.docx --out work/
+
+# 2. eyeball work/my_document.silver.json against the document, then bless it
+docx-parse-eval bless work/my_document.silver.json --out .     # → gold/my_document.json
+
+# 3. project the Docling output into the same schema; --source binds the
+#    prediction to the .docx bytes so compare enforces source identity (R7)
+docx-parse-eval predict dl/my_document.json --out pred/ --source my_document.docx
+
+# 4. diff the two sides — non-zero exit iff any defect flag fires
+docx-parse-eval compare --gold gold/my_document.json \
+                        --pred pred/my_document.docling-adapter.json --out results/
+```
+
+A typical `compare` line looks like:
+
+```
+[compare] my_document × docling-adapter: 2 flag(s) → caption_association, caption_count
+[compare] results → results/my_document.docling-adapter.csv , …parquet
+```
+
+Every fired flag is a guaranteed discrepancy between the OOXML source and the
+parser's output on at least one side — worth a look, one row per metric in the
+CSV. This walkthrough is exercised verbatim on the repo's public fixtures
+(`tests/fixtures/public/word_sample.docx`).
+
 ## Environment
 
-Dependencies are provisioned via **Guix** (reproducible), not pip. The harness
-deps are pinned in [`manifest.scm`](./manifest.scm) and exclude Docling itself —
+The maintained development environment is **Guix** (reproducible): the harness
+deps are pinned in [`manifest.scm`](./manifest.scm). A plain
+`pip install .[test]` also works (the test suite is verified against
+pip-resolved current versions). Either way the deps exclude Docling itself —
 Docling predictions arrive as `DoclingDocument` JSON produced out-of-band (R8/R11).
 
 > Inside the Guix profile the interpreter is `python3` (there is no bare `python`).

@@ -45,7 +45,15 @@ def _cmd_bootstrap(args: argparse.Namespace) -> int:
 
 
 def _cmd_predict(args: argparse.Namespace) -> int:
-    rec = docling_adapter.extract(args.json, doc_id=args.doc_id) if args.doc_id else docling_adapter.extract(args.json)
+    kw: dict = {}
+    if args.doc_id:
+        kw["doc_id"] = args.doc_id
+    if args.source:
+        # Bind the prediction to the source bytes so compare's R7 identity
+        # check is exact instead of informational (empty hash = unknown).
+        kw["source_path"] = args.source
+        kw["source_sha256"] = sha256_file(Path(args.source))
+    rec = docling_adapter.extract(args.json, **kw)
     out = Path(args.out) / f"{rec.doc_id}.{rec.producer}.json"
     write_record(rec, out)
     print(f"[predict] prediction record → {out}")
@@ -209,6 +217,13 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("json")
     pr.add_argument("--doc-id", default=None)
     pr.add_argument("--out", default=".")
+    pr.add_argument(
+        "--source",
+        default=None,
+        metavar="DOCX",
+        help="the source .docx these predictions were parsed from; stamps its "
+        "sha256 into the record so compare enforces source identity (R7)",
+    )
     pr.set_defaults(func=_cmd_predict)
 
     bl = sub.add_parser("bless", help="silver → gold store, with the R7 source-hash check")

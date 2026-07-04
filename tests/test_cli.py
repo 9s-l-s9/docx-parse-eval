@@ -21,6 +21,17 @@ def test_predict_writes_prediction_record(tmp_path):
     assert list(tmp_path.glob("*.docling-adapter.json"))
 
 
+def test_predict_source_stamps_sha256(tmp_path):
+    from docx_parse_eval.io import read_record, sha256_file
+
+    rc = main(["predict", str(FIX / "docling" / "mini.docling.json"),
+               "--out", str(tmp_path), "--source", str(FIX / "synthetic.docx")])
+    assert rc == 0
+    rec = read_record(next(tmp_path.glob("*.docling-adapter.json")))
+    assert rec.source_sha256 == sha256_file(FIX / "synthetic.docx")
+    assert rec.source_path == str(FIX / "synthetic.docx")
+
+
 def test_compare_green_exits_zero_and_emits_files(tmp_path):
     # bootstrap a record, then compare it against itself → no flags → rc 0
     main(["bootstrap", str(FIX / "synthetic.docx"), "--out", str(tmp_path)])
