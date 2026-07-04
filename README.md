@@ -20,9 +20,14 @@ is installed):
 docling --to json --output dl/ my_document.docx     # out-of-band, not a harness dep
 ```
 
-Then, in a fresh virtualenv:
+Then, with **uv** (or plain pip in a virtualenv — both are verified):
 
 ```sh
+uv sync                       # dev env: package + pytest/ruff/mypy (uv.lock pinned)
+uv run docx-parse-eval --help
+# or, as a dependency of your own project:
+uv add path/to/doc-parsing-evaluation-framework
+# or classic:
 pip install path/to/doc-parsing-evaluation-framework   # installs the docx-parse-eval CLI
 
 # 1. reference extraction straight from the OOXML (the "silver" draft record)

@@ -21,6 +21,14 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest>=8"]
 
+# PEP 735 — `uv sync` installs these by default; `uv run pytest` just works.
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
 [project.scripts]
 docx-parse-eval = "docx_parse_eval.cli:main"
 
