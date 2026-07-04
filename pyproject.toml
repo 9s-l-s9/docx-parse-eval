@@ -6,9 +6,22 @@ build-backend = "setuptools.build_meta"
 name = "docx-parse-eval"
 version = "0.1.0"
 description = "Differential evaluation harness for .docx parsers: reference OOXML extraction vs any document-intelligence output (Docling, ...) on a shared schema"
+readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
+authors = [{ name = "Samuel Schmidt", email = "schmidt.l.samuel@gmail.com" }]
+keywords = ["docx", "docling", "document-parsing", "evaluation", "TEDS", "differential-testing"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing :: Markup :: XML",
+    "Topic :: Software Development :: Quality Assurance",
+]
 # Runtime deps are provisioned via Guix (see evaluation/manifest.scm), not pip.
 # Listed here for documentation / non-Guix installs.
 dependencies = [

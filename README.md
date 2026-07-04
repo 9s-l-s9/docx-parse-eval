@@ -9,6 +9,28 @@ them. See
 [`evaluation-framework-spec.md`](./evaluation-framework-spec.md) for the spec and
 [`implementation-plan.md`](./implementation-plan.md) for build sequencing.
 
+## Is this for you?
+
+**Use it when** your `.docx` documents are (a) too long to eyeball the parse
+(think 100+ pages), (b) confidential — evaluation runs entirely on your
+machine, and the design keeps your corpus out of CI, agents, and third-party
+services by construction (R8), or (c) parsed *recurringly* — the snapshot tier
+answers "did upgrading the parser change what it extracts from my documents?"
+without re-verifying anything by hand.
+
+**Skip it when** you have a handful of short files you'll parse exactly once —
+skimming the parser's output directly is faster — or your inputs are scanned
+PDFs/images: the whole approach rests on the source format being
+machine-readable structure (true for `.docx`/OOXML, extensible to ODT or HTML,
+fundamentally not true for pixels), so there is no gold-by-construction to
+diff against.
+
+**What a result means:** gold comes from an independent reading of the same
+OOXML, so a fired flag is a guaranteed discrepancy between two readings — a
+defect on at least one side, always worth inspecting — rather than a claim of
+absolute truth. The `bless`/`reconcile` steps put a human on the arbitration
+seat exactly for this reason.
+
 ## Quick start (pip)
 
 You have a handful of `.docx` files, parse them with Docling, and want to know

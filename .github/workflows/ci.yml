@@ -1,0 +1,23 @@
+# CI runs on the public/synthetic fixtures ONLY. The real corpus never enters
+# CI or any third-party context (spec R8) — nothing here changes that.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync
+      - run: uv run ruff check src tests
+      - run: uv run mypy src/docx_parse_eval --ignore-missing-imports
+      - run: uv run pytest -q
