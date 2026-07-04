@@ -31,8 +31,10 @@ Classification policy (deterministic, fixture-driven, locale-independent):
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, Literal
 
 import docx
+from docx.document import Document as DocxDocument
 from docx.oxml.ns import qn
 from docx.table import Table
 from docx.text.paragraph import Paragraph
@@ -41,6 +43,7 @@ from docx_parse_eval.adapters._common import derived_text_fields
 from docx_parse_eval.io import sha256_file
 from docx_parse_eval.normalize import char_count_normalized, normalize_text, strip_enumeration
 from docx_parse_eval.schema import (
+    ElementType,
     EvaluationRecord,
     FigureRecord,
     HeadingRecord,
@@ -57,10 +60,15 @@ _UNORDERED_NUMFMTS = {"bullet", "none"}
 
 
 # --- block model -------------------------------------------------------------
+# "list_item" is an interim kind: _collapse_lists() coalesces runs of them into
+# a single "list" block, so it never reaches an EvaluationRecord.
+_BlockKind = ElementType | Literal["list_item"]
+
+
 class _Block:
     __slots__ = ("kind", "texts", "obj", "extra")
 
-    def __init__(self, kind: str, texts: list[str], obj=None, extra: dict | None = None):
+    def __init__(self, kind: _BlockKind, texts: list[str], obj=None, extra: dict | None = None):
         self.kind = kind  # heading|paragraph|table|figure|caption|list
         self.texts = texts  # text fragments this block contributes (in order)
         self.obj = obj  # underlying python-docx object where useful
@@ -73,9 +81,9 @@ class _DocContext:
     formats once per document, so paragraph classification does not depend on
     localized style *names*."""
 
-    def __init__(self, doc: docx.Document):
+    def __init__(self, doc: DocxDocument):
         self.doc = doc
-        self._styles: dict[str, object] = {}
+        self._styles: dict[str, Any] = {}  # styleId → w:style lxml element
         styles_el = doc.styles.element
         for st in styles_el.findall(qn("w:style")):
             sid = st.get(qn("w:styleId"))
@@ -141,7 +149,7 @@ class _DocContext:
         return "Number" in style_name
 
 
-def _numbering_formats(doc: docx.Document) -> dict[int, str]:
+def _numbering_formats(doc: DocxDocument) -> dict[int, str]:
     """numId → level-0 numFmt, resolved through abstractNum indirection."""
     try:
         part = doc.part.part_related_by(
@@ -364,7 +372,7 @@ def _classify_paragraph(p: Paragraph, ctx: _DocContext) -> list[_Block]:
 
 
 # --- tables --------------------------------------------------------------------
-def _table_blocks(t: Table, doc: docx.Document) -> list[_Block]:
+def _table_blocks(t: Table, doc: DocxDocument) -> list[_Block]:
     """The table's own block followed by blocks for any tables nested inside
     its cells (recursively) — tree-shaped parsers report nested tables as
     separate tables, and their text is invisible to `cell.text`, so flattening
@@ -433,14 +441,14 @@ def _table_blocks(t: Table, doc: docx.Document) -> list[_Block]:
 
 
 # --- document walk ---------------------------------------------------------------
-def _raw_blocks(doc: docx.Document) -> list[_Block]:
+def _raw_blocks(doc: DocxDocument) -> list[_Block]:
     ctx = _DocContext(doc)
     blocks: list[_Block] = []
     _walk_block_container(doc.element.body, doc, ctx, blocks)
     return blocks
 
 
-def _walk_block_container(parent, doc: docx.Document, ctx: _DocContext, blocks: list[_Block]) -> None:
+def _walk_block_container(parent, doc: DocxDocument, ctx: _DocContext, blocks: list[_Block]) -> None:
     """Iterate block-level children in document order, descending into content
     controls (`w:sdt` → `w:sdtContent`) so block content nested inside them
     (e.g. a table in a content control) is not missed. Does **not** descend into
@@ -522,10 +530,11 @@ def extract(docx_path: str | Path) -> EvaluationRecord:
     tables: list[TableRecord] = []
     figures: list[FigureRecord] = []
     lists: list[ListRecord] = []
-    element_sequence: list[str] = []
+    element_sequence: list[ElementType] = []
     text_blocks: list[str] = []
 
     for pos, b in enumerate(blocks):
+        assert b.kind != "list_item"  # eliminated by _collapse_lists()
         element_sequence.append(b.kind)
         text_blocks.extend(b.texts)
         if b.kind == "heading":
@@ -586,7 +595,7 @@ def extract(docx_path: str | Path) -> EvaluationRecord:
     )
 
 
-def _title(doc: docx.Document, fallback: str) -> str:
+def _title(doc: DocxDocument, fallback: str) -> str:
     ctx = _DocContext(doc)
     for p in doc.paragraphs:
         if not normalize_text(p.text):
@@ -597,7 +606,7 @@ def _title(doc: docx.Document, fallback: str) -> str:
     return fallback
 
 
-def _part_count(doc: docx.Document, kind: str) -> int:
+def _part_count(doc: DocxDocument, kind: str) -> int:
     """Count footnotes/endnotes (excluding the default separator entries)."""
     try:
         part = doc.part.part_related_by(

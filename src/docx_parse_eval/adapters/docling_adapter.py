@@ -16,6 +16,7 @@ from pathlib import Path
 from docx_parse_eval.adapters._common import derived_text_fields
 from docx_parse_eval.normalize import char_count_normalized, normalize_text, strip_enumeration
 from docx_parse_eval.schema import (
+    ElementType,
     EvaluationRecord,
     FigureRecord,
     HeadingRecord,
@@ -56,7 +57,7 @@ class _Doc:
         self.groups = data.get("groups", [])
 
     def resolve(self, child: dict) -> tuple[str, dict]:
-        ref = child.get("$ref") or child.get("cref")
+        ref = child.get("$ref") or child.get("cref") or ""
         kind, idx = _ref_target(ref)
         return kind, self.data[kind][idx]
 
@@ -119,7 +120,7 @@ def _table_record(item: dict, position: int, n: int) -> tuple[TableRecord, list[
 
 
 def _ref_of(child: dict) -> str:
-    return child.get("$ref") or child.get("cref")
+    return child.get("$ref") or child.get("cref") or ""
 
 
 def extract_from_dict(data: dict, doc_id: str = "docling", source_path: str = "",
@@ -130,7 +131,7 @@ def extract_from_dict(data: dict, doc_id: str = "docling", source_path: str = ""
     tables: list[TableRecord] = []
     figures: list[FigureRecord] = []
     lists: list[ListRecord] = []
-    element_sequence: list[str] = []
+    element_sequence: list[ElementType] = []
     text_blocks: list[str] = []
     visited: set[str] = set()
 
@@ -259,7 +260,7 @@ def extract_from_dict(data: dict, doc_id: str = "docling", source_path: str = ""
     def _emit_list(item: dict, label: str) -> None:
         li_texts: list[str] = []
         li_items: list[dict] = []
-        others: list[dict] = []
+        others: list[tuple[str, dict]] = []
         for ch in item.get("children", []):
             ref = _ref_of(ch)
             k, it = _resolve(data, ref)

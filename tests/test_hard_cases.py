@@ -17,13 +17,13 @@ Covers:
 
 from __future__ import annotations
 
+import binascii
 import io
 import struct
 import zlib
-import binascii
+from pathlib import Path
 
 import docx
-import pytest
 from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -32,7 +32,6 @@ from docx_parse_eval import config as C
 from docx_parse_eval.adapters import ooxml_reference
 from docx_parse_eval.comparator import _count_metric, compare, fired_flags
 from docx_parse_eval.io import read_record
-from pathlib import Path
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
@@ -78,7 +77,7 @@ def test_localized_caption_detected_via_seq_field(tmp_path):
     doc.add_picture(io.BytesIO(_png()))
     # What Word's Insert-Caption emits in a German install: a "Beschriftung"-
     # styled paragraph whose number is a SEQ field. No English style name.
-    st = doc.styles.add_style("Beschriftung", WD_STYLE_TYPE.PARAGRAPH)
+    doc.styles.add_style("Beschriftung", WD_STYLE_TYPE.PARAGRAPH)
     p = doc.add_paragraph(style="Beschriftung")
     p.add_run("Abbildung ")
     r = p.add_run()
@@ -135,7 +134,7 @@ def test_adjacent_ordered_and_bulleted_lists_stay_distinct(tmp_path):
     doc.add_paragraph("Point B", style="List Bullet")
 
     rec = _extract(doc, tmp_path)
-    assert [(l.n_items, l.is_ordered) for l in rec.lists] == [(2, True), (2, False)]
+    assert [(lst.n_items, lst.is_ordered) for lst in rec.lists] == [(2, True), (2, False)]
 
 
 def test_orderedness_comes_from_numbering_part_not_style_name(tmp_path):
@@ -170,7 +169,7 @@ def test_direct_numpr_on_normal_style_is_a_list(tmp_path):
     ppr.append(numpr)
 
     rec = _extract(doc, tmp_path)
-    assert [(l.n_items, l.is_ordered) for l in rec.lists] == [(1, True)]
+    assert [(lst.n_items, lst.is_ordered) for lst in rec.lists] == [(1, True)]
 
 
 # --- nested tables ---------------------------------------------------------------
@@ -245,7 +244,7 @@ def test_docling_enumerated_items_make_list_ordered():
                  "children": [{"$ref": "#/texts/0"}, {"$ref": "#/texts/1"}]}],
         body_children=["#/groups/0"],
     ))
-    assert [(l.n_items, l.is_ordered) for l in rec.lists] == [(2, True)]
+    assert [(lst.n_items, lst.is_ordered) for lst in rec.lists] == [(2, True)]
 
 
 def test_docling_list_item_children_are_not_dropped():

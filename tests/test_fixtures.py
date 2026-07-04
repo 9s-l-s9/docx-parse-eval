@@ -10,10 +10,10 @@ import pytest
 FIX = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(FIX))
 
+import mutations as mut  # noqa: E402
+
 from docx_parse_eval.io import read_record, sha256_file  # noqa: E402
 from docx_parse_eval.schema import SCHEMA_VERSION  # noqa: E402
-
-import mutations as mut  # noqa: E402
 
 
 def _gold():

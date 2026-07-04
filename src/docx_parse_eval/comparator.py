@@ -19,7 +19,7 @@ import Levenshtein
 from pydantic import BaseModel
 
 from docx_parse_eval import config as C
-from docx_parse_eval.schema import EvaluationRecord, ElementType
+from docx_parse_eval.schema import ElementType, EvaluationRecord
 from docx_parse_eval.teds import teds
 
 # Stable single-char encoding of element types so Levenshtein (a string metric)
@@ -177,8 +177,8 @@ def compare(gold: EvaluationRecord, pred: EvaluationRecord) -> list[MetricResult
     results.append(
         _count_metric(
             "list_item_count",
-            sum(l.n_items for l in gold.lists),
-            sum(l.n_items for l in pred.lists),
+            sum(lst.n_items for lst in gold.lists),
+            sum(lst.n_items for lst in pred.lists),
         )
     )
     results.append(_count_metric("hyperlink_count", gold.hyperlink_count, pred.hyperlink_count))

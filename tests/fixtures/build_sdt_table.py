@@ -21,7 +21,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
 import docx
 from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
 
 HERE = Path(__file__).resolve().parent
 DOCX_PATH = HERE / "sdt_table.docx"

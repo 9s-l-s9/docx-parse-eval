@@ -6,8 +6,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from docx_parse_eval import config as C
 from docx_parse_eval import cli
+from docx_parse_eval import config as C
 from docx_parse_eval.comparator import compare, fired_flags
 from docx_parse_eval.io import read_record, record_content_hash, record_diff, write_record
 from docx_parse_eval.schema import TableRecord

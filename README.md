@@ -24,6 +24,10 @@ guix shell -m manifest.scm -- python3 -m pytest tests -q
 # env import smoke-test
 guix shell -m manifest.scm -- python3 -c \
   "import pydantic, docx, Levenshtein, pandas, pyarrow; print('OK')"
+
+# static checks (both must stay clean)
+guix shell ruff -- ruff check src tests
+guix shell -m manifest.scm python-mypy -- python3 -m mypy src/docx_parse_eval --ignore-missing-imports
 ```
 
 ## Runner (CLI)

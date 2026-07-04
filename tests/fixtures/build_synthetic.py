@@ -15,13 +15,13 @@ Emits, next to this file:
 
 from __future__ import annotations
 
+import binascii
 import io
 import struct
 import sys
+import zipfile
 import zlib
 from pathlib import Path
-import binascii
-import zipfile
 
 # Make the package importable when run as a plain script.
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))

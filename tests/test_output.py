@@ -1,6 +1,7 @@
 """Phase 4 acceptance: the long-form comparison table emits as CSV + Parquet,
 round-trips, and faithfully carries the flags (spec §11)."""
 
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -9,8 +10,6 @@ from docx_parse_eval.adapters.ooxml_reference import extract
 from docx_parse_eval.comparator import compare
 from docx_parse_eval.io import read_record
 from docx_parse_eval.output import RESULT_COLUMNS, results_to_long_df, write_results_table
-
-import sys
 
 FIX = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(FIX))
