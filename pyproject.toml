@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]  # PEP 639 SPDX `license` field
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,8 @@ name = "docx-parse-eval"
 version = "0.1.0"
 description = "Differential evaluation harness for .docx parsers: reference OOXML extraction vs any document-intelligence output (Docling, ...) on a shared schema"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
 # Runtime deps are provisioned via Guix (see evaluation/manifest.scm), not pip.
 # Listed here for documentation / non-Guix installs.
 dependencies = [
