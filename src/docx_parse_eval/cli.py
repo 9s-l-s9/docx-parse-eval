@@ -143,6 +143,21 @@ def _cmd_compare(args: argparse.Namespace) -> int:
     return 1 if flags else 0
 
 
+def _cmd_report(args: argparse.Namespace) -> int:
+    """Self-contained HTML failure report over one or more gold/pred pairs."""
+    from docx_parse_eval.report import render_report
+
+    if len(args.gold) != len(args.pred):
+        print(f"[report] --gold given {len(args.gold)} time(s) but --pred "
+              f"{len(args.pred)} — they pair by order.")
+        return 2
+    pairs = [(read_record(g), read_record(p)) for g, p in zip(args.gold, args.pred)]
+    out = Path(args.out)
+    out.write_text(render_report(pairs), encoding="utf-8")
+    print(f"[report] {len(pairs)} document(s) → {out}")
+    return 0
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     """Corpus run: `compare` over every entry of a manifest, one combined
     long-form table. Manifest JSON: [{"doc_id": …, "gold": path, "pred": path}, …]."""
@@ -258,6 +273,17 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--mlflow", action="store_true")
     r.add_argument("--allow-source-mismatch", action="store_true")
     r.set_defaults(func=_cmd_run)
+
+    rp = sub.add_parser(
+        "report",
+        help="gold + prediction record(s) → self-contained HTML failure report",
+    )
+    rp.add_argument("--gold", action="append", required=True,
+                    help="gold record JSON (repeatable, pairs with --pred by order)")
+    rp.add_argument("--pred", action="append", required=True,
+                    help="prediction record JSON (repeatable)")
+    rp.add_argument("--out", default="report.html")
+    rp.set_defaults(func=_cmd_report)
 
     s = sub.add_parser("snapshot", help="drift check: record content hash vs stored baseline")
     s.add_argument("record")

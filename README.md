@@ -43,6 +43,11 @@ docx-parse-eval predict dl/my_document.json --out pred/ --source my_document.doc
 # 4. diff the two sides — non-zero exit iff any defect flag fires
 docx-parse-eval compare --gold gold/my_document.json \
                         --pred pred/my_document.docling-adapter.json --out results/
+
+# 5. one self-contained HTML page: flagged metrics, side-by-side table grids
+#    with per-cell diffs + TEDS, caption pairs (repeat --gold/--pred per doc)
+docx-parse-eval report --gold gold/my_document.json \
+                       --pred pred/my_document.docling-adapter.json --out report.html
 ```
 
 A typical `compare` line looks like:
@@ -117,7 +122,8 @@ First invocation downloads substitutes; subsequent runs are instant.
     teds.py                    # TEDS/TEDS-Struct (PubTabNet metric on python-apted)
     comparator.py              # Script 3 — metrics + flags, model-agnostic
     output.py                  # CSV/Parquet long-form emit + optional MLflow hook
-    cli.py                     # bootstrap/bless/reconcile/predict/compare/run/snapshot
+    report.py                  # self-contained HTML failure report
+    cli.py                     # bootstrap/bless/reconcile/predict/compare/run/snapshot/report
     adapters/
       ooxml_reference.py       # Script 1 — gold/reference adapter (python-docx)
       docling_adapter.py       # Script 2 — DoclingDocument JSON adapter (zero-dep)
