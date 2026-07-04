@@ -1,0 +1,281 @@
+{
+  "doc_id": "synthetic-001",
+  "title": "Synthetic Warehouse Specification",
+  "source_path": "evaluation/tests/fixtures/synthetic.docx",
+  "source_sha256": "28765d9c9a5885d70190d2f0874f7a9a4b4b1f40cda53fa4266d0e4163bcb681",
+  "schema_version": "0.4",
+  "producer": "fixture-construction",
+  "producer_version": "1",
+  "word_count": 92,
+  "char_count_normalized": 613,
+  "full_text_normalized": "Warehouse Technical Specification This document specifies the warehouse system at a high level. Scope Covers conveyors, racking and scanning equipment. Dimensions Each module measures 120 mm wide and draws 24 V; see PN-12345. Tolerances Permitted deviation is ±0.5° across 100% of units (µ-class). Receive goods Store goods Pick goods Layout Item Qty Part No Conveyor 2 PN-12345 Pallet rack 10 PN-67890 Scanner 5 SC-001 Figure 1: Conveyor layout overview. Equipment Equipment Tolerances Clearance ±0.5° ±1.0° Voltage 24 V 48 V Figure 2: Rack elevation. References Refer to standard EN-1234 for compliance details.",
+  "tables": [
+    {
+      "table_id": "t0",
+      "position": 10,
+      "n_rows": 4,
+      "n_cols": 3,
+      "cell_count": 12,
+      "has_header": true,
+      "cell_text_length": 66,
+      "cells": [
+        {
+          "row": 0,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Item"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Qty"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Part No"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Conveyor"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "2"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "PN-12345"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Pallet rack"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "10"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "PN-67890"
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Scanner"
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "5"
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "SC-001"
+        }
+      ]
+    },
+    {
+      "table_id": "t1",
+      "position": 14,
+      "n_rows": 3,
+      "n_cols": 3,
+      "cell_count": 7,
+      "has_header": false,
+      "cell_text_length": 54,
+      "cells": [
+        {
+          "row": 0,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 3,
+          "text": "Equipment Tolerances"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Clearance"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "±0.5°"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "±1.0°"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "Voltage"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "24 V"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "row_span": 1,
+          "col_span": 1,
+          "text": "48 V"
+        }
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "figure_id": "f0",
+      "position": 11,
+      "caption_text": "Figure 1: Conveyor layout overview.",
+      "has_caption": true
+    },
+    {
+      "figure_id": "f1",
+      "position": 15,
+      "caption_text": "Figure 2: Rack elevation.",
+      "has_caption": true
+    },
+    {
+      "figure_id": "f2",
+      "position": 17,
+      "caption_text": "",
+      "has_caption": false
+    }
+  ],
+  "headings": [
+    {
+      "text": "Warehouse Technical Specification",
+      "level": 1,
+      "position": 0
+    },
+    {
+      "text": "Scope",
+      "level": 2,
+      "position": 2
+    },
+    {
+      "text": "Dimensions",
+      "level": 3,
+      "position": 4
+    },
+    {
+      "text": "Tolerances",
+      "level": 3,
+      "position": 6
+    },
+    {
+      "text": "Layout",
+      "level": 2,
+      "position": 9
+    },
+    {
+      "text": "Equipment",
+      "level": 2,
+      "position": 13
+    },
+    {
+      "text": "References",
+      "level": 1,
+      "position": 18
+    }
+  ],
+  "lists": [
+    {
+      "list_id": "l0",
+      "position": 8,
+      "n_items": 3,
+      "is_ordered": true
+    }
+  ],
+  "hyperlink_count": 0,
+  "footnote_count": 0,
+  "endnote_count": 0,
+  "vector_shape_count": 0,
+  "element_sequence": [
+    "heading",
+    "paragraph",
+    "heading",
+    "paragraph",
+    "heading",
+    "paragraph",
+    "heading",
+    "paragraph",
+    "list",
+    "heading",
+    "table",
+    "figure",
+    "caption",
+    "heading",
+    "table",
+    "figure",
+    "caption",
+    "figure",
+    "heading",
+    "paragraph"
+  ],
+  "identifier_tokens": [
+    "0.5",
+    "0.5",
+    "1.0",
+    "100",
+    "120 mm",
+    "24 V",
+    "24 V",
+    "48 V",
+    "EN-1234",
+    "PN-12345",
+    "PN-12345",
+    "PN-67890",
+    "SC-001"
+  ],
+  "special_chars": [
+    "°",
+    "±",
+    "µ",
+    "%"
+  ]
+}

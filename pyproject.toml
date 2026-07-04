@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docx-parse-eval"
+version = "0.1.0"
+description = "Differential evaluation harness for .docx parsers: reference OOXML extraction vs any document-intelligence output (Docling, ...) on a shared schema"
+requires-python = ">=3.11"
+# Runtime deps are provisioned via Guix (see evaluation/manifest.scm), not pip.
+# Listed here for documentation / non-Guix installs.
+dependencies = [
+    "pydantic>=2",
+    "python-docx>=1",
+    "Levenshtein>=0.27",
+    "apted>=1.0",
+    "pandas>=2",
+    "pyarrow>=15",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+docx-parse-eval = "docx_parse_eval.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

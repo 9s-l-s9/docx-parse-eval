@@ -1,0 +1,62 @@
+{
+  "schema_name": "DoclingDocument",
+  "version": "1.0.0",
+  "name": "mini",
+  "origin": {"filename": "mini.docx", "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+  "furniture": {
+    "self_ref": "#/furniture",
+    "children": [{"$ref": "#/texts/6"}]
+  },
+  "body": {
+    "self_ref": "#/body",
+    "children": [
+      {"$ref": "#/texts/0"},
+      {"$ref": "#/texts/1"},
+      {"$ref": "#/texts/2"},
+      {"$ref": "#/groups/0"},
+      {"$ref": "#/tables/0"},
+      {"$ref": "#/pictures/0"},
+      {"$ref": "#/texts/5"}
+    ]
+  },
+  "groups": [
+    {
+      "self_ref": "#/groups/0",
+      "label": "ordered_list",
+      "children": [{"$ref": "#/texts/3"}, {"$ref": "#/texts/4"}]
+    }
+  ],
+  "texts": [
+    {"self_ref": "#/texts/0", "label": "title", "text": "Mini Spec", "orig": "Mini Spec"},
+    {"self_ref": "#/texts/1", "label": "section_header", "level": 2, "text": "Parts", "orig": "Parts"},
+    {"self_ref": "#/texts/2", "label": "paragraph", "text": "Module draws 24 V; see PN-12345.", "orig": "Module draws 24 V; see PN-12345."},
+    {"self_ref": "#/texts/3", "label": "list_item", "text": "First step", "orig": "First step"},
+    {"self_ref": "#/texts/4", "label": "list_item", "text": "Second step", "orig": "Second step"},
+    {"self_ref": "#/texts/5", "label": "caption", "text": "Figure 1: Layout.", "orig": "Figure 1: Layout."},
+    {"self_ref": "#/texts/6", "label": "page_header", "content_layer": "furniture", "text": "CONFIDENTIAL", "orig": "CONFIDENTIAL"}
+  ],
+  "tables": [
+    {
+      "self_ref": "#/tables/0",
+      "label": "table",
+      "captions": [],
+      "data": {
+        "num_rows": 2,
+        "num_cols": 2,
+        "table_cells": [
+          {"text": "Name", "column_header": true, "start_row_offset_idx": 0, "start_col_offset_idx": 0},
+          {"text": "Qty", "column_header": true, "start_row_offset_idx": 0, "start_col_offset_idx": 1},
+          {"text": "Bolt", "column_header": false, "start_row_offset_idx": 1, "start_col_offset_idx": 0},
+          {"text": "5", "column_header": false, "start_row_offset_idx": 1, "start_col_offset_idx": 1}
+        ]
+      }
+    }
+  ],
+  "pictures": [
+    {
+      "self_ref": "#/pictures/0",
+      "label": "picture",
+      "captions": [{"$ref": "#/texts/5"}]
+    }
+  ]
+}

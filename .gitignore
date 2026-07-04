@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.venv/
+# harness working dirs (generated artefacts, never source of truth)
+work/
+pred/
+results/
+mlruns/
