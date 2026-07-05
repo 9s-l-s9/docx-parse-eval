@@ -1,9 +1,9 @@
 # Specification — Docling `.docx` Parsing Evaluation Framework
 
-**Status:** Draft v0.3
+**Status:** Draft v0.4 (tracks `schema_version = "0.4"`: per-cell table grids + TEDS/TEDS-Struct implemented)
 **Scope:** Tier-2 (correctness / conservation) evaluation of a Docling-based `.docx` parsing pipeline, plus the self-test / fixture tier beneath it.
 **Architecture in one line:** model-agnostic `EvaluationRecord` schema + model-specific adapters; the comparator only ever sees the schema, never a model-native or exported format.
-**Out of scope (for now):** structural-quality metrics (TEDS/GriTS) and image-description quality. See [§12 Future tiers](#12-future-tiers).
+**Out of scope (for now):** GriTS and image-description quality. TEDS / TEDS-Struct, originally deferred here, are now **implemented** (schema 0.4, `teds.py`, via `python-apted`). See [§12 Future tiers](#12-future-tiers).
 
 ---
 
@@ -32,7 +32,7 @@ The method is **differential testing against a reference parser**: project the o
 0. **Self-test / fixture tier** (§6) — validates the *harness* itself (adapters, schema projection, comparator, thresholds), **not** the parser. Runs on synthetic + public fixtures, in CI, in milliseconds. It is also the substrate the scripts are **developed** against.
 1. **Snapshot tier** (optional) — "did Docling's output change since last commit?" Catches *unintended* drift. Says nothing about correctness.
 2. **Conservation / agreement tier** — *this spec.* Catches breakage relative to the reference.
-3. **Quality tier** (future) — TEDS / TEDS-Struct for table structure, an LLM-as-judge + fact-coverage for image descriptions. Measures whether the extraction is actually *good*.
+3. **Quality tier** (partially implemented) — TEDS / TEDS-Struct for table structure (**done**, schema 0.4); an LLM-as-judge + fact-coverage for image descriptions (future). Measures whether the extraction is actually *good*.
 
 ## 3. Core principle: agreement ≠ accuracy
 
@@ -332,7 +332,7 @@ Notes:
 Deferred, but the schema is built so they slot in without rework:
 
 - **HTML export-loss diagnostic (optional, cheap).** Add a *second* Docling adapter that reads the **HTML export** (`html_adapter.py`), and compare `docling_native_record` vs `docling_html_record`. This quantifies how much information the HTML export drops for this document type; large divergence ⇒ HTML is not trustworthy here. A nice extra metric that also empirically justifies R11.
-- **Table structure quality → TEDS / TEDS-Struct (and optionally GriTS).** The `tables` inventory + corrected structure already in gold is the precursor; add gold table HTML/OTSL and reuse an existing TEDS implementation. Do **not** reimplement TEDS.
+- **Table structure quality → TEDS / TEDS-Struct — ✔ implemented** (schema 0.4: `TableRecord.cells` per-cell grid; `teds.py` scores the PubTabNet definition with the tree-edit core from `python-apted` — no algorithm reimplemented, per R4). GriTS remains optional/future.
 - **Image-description quality → LLM-as-judge + fact-coverage.** The `figures` inventory (with positions and captions) is already the anchor; when the description model is re-enabled, add per-figure salient-fact lists and score grounding/completeness/correctness, with **hallucinated elements** as a first-class metric. Optionally add CLIPScore as a cheap reference-free signal.
 - **Not applicable:** formula metrics (CDM) — the corpus contains no math; OCR metrics — source is digital `.docx`.
 

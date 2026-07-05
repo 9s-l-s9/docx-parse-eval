@@ -78,3 +78,43 @@ def test_optional_fulltext_may_be_omitted():
     data.pop("full_text_normalized")
     rec = EvaluationRecord.model_validate(data)
     assert rec.full_text_normalized is None
+
+
+def test_value_invariants_rejected():
+    """Shape-valid but meaningless values must not validate: negative
+    counts/positions, zero spans, heading level 0 (all would silently
+    produce nonsense metrics downstream)."""
+    base = _full_record().model_dump()
+    for corruption in (
+        {"word_count": -1},
+        {"hyperlink_count": -3},
+        {"headings": [{"text": "h", "level": 0, "position": 0}]},
+        {"tables": [{**base["tables"][0], "n_rows": -1}]},
+        {
+            "tables": [
+                {
+                    **base["tables"][0],
+                    "cells": [{"row": 0, "col": 0, "row_span": 0, "col_span": 1, "text": ""}],
+                }
+            ]
+        },
+    ):
+        with pytest.raises(ValidationError):
+            EvaluationRecord.model_validate({**base, **corruption})
+
+
+def test_source_sha256_placeholder_rejected():
+    """R7 gate integrity: only "" (unbound) or 64 lowercase hex validate, so
+    two records both stamped e.g. "unknown" can never pass the equality gate."""
+    base = _full_record().model_dump()
+    for bad in ("unknown", "deadbeef", "A" * 64):
+        with pytest.raises(ValidationError):
+            EvaluationRecord.model_validate({**base, "source_sha256": bad})
+    for ok in ("", "a" * 64):
+        EvaluationRecord.model_validate({**base, "source_sha256": ok})
+
+
+def test_foreign_schema_version_rejected():
+    """A record claiming another version was written against another contract."""
+    with pytest.raises(ValidationError):
+        EvaluationRecord.model_validate({**_full_record().model_dump(), "schema_version": "0.3"})

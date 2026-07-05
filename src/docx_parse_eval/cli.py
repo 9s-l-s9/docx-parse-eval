@@ -24,7 +24,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from docx_parse_eval.adapters import docling_adapter, ooxml_reference
+from docx_parse_eval import adapters
+from docx_parse_eval.adapters import ooxml_reference
 from docx_parse_eval.comparator import compare, fired_flags
 from docx_parse_eval.io import (
     read_record,
@@ -53,7 +54,21 @@ def _cmd_predict(args: argparse.Namespace) -> int:
         # check is exact instead of informational (empty hash = unknown).
         kw["source_path"] = args.source
         kw["source_sha256"] = sha256_file(Path(args.source))
-    rec = docling_adapter.extract(args.json, **kw)
+    elif not args.allow_unknown_source:
+        print(
+            "[predict] REFUSED: no --source given, so the record cannot be bound "
+            "to the .docx bytes and compare's R7 identity check degrades to a "
+            "warning — it could silently score against the wrong document. "
+            "Pass --source DOCX, or --allow-unknown-source if the .docx is "
+            "genuinely unavailable here."
+        )
+        return 2
+    try:
+        adapter = adapters.get_adapter(args.adapter)
+    except (KeyError, TypeError) as e:
+        print(f"[predict] {e.args[0]}")
+        return 2
+    rec = adapter.extract(args.json, **kw)
     out = Path(args.out) / f"{rec.doc_id}.{rec.producer}.json"
     write_record(rec, out)
     print(f"[predict] prediction record → {out}")
@@ -98,6 +113,15 @@ def _cmd_reconcile(args: argparse.Namespace) -> int:
 
 def _check_source_identity(gold, pred, allow_mismatch: bool) -> int | None:
     """R7 hard gate: refuse to compare records derived from different bytes."""
+    missing = [name for name, rec in (("gold", gold), ("prediction", pred)) if not rec.source_sha256]
+    if missing:
+        print(
+            f"[compare] WARNING: the {' and '.join(missing)} record"
+            f"{'s have' if len(missing) > 1 else ' has'} no source_sha256 — the R7 "
+            "identity check cannot run; nothing proves both records describe the "
+            "same .docx bytes (re-run predict with --source to bind it)."
+        )
+        return None
     if (
         gold.source_sha256
         and pred.source_sha256
@@ -238,6 +262,18 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="DOCX",
         help="the source .docx these predictions were parsed from; stamps its "
         "sha256 into the record so compare enforces source identity (R7)",
+    )
+    pr.add_argument(
+        "--allow-unknown-source",
+        action="store_true",
+        help="proceed without --source (record gets an empty source_sha256; "
+        "compare can then only warn, not enforce, R7 identity)",
+    )
+    pr.add_argument(
+        "--adapter",
+        default="docling",
+        help="prediction adapter name: built-ins (docling) or a "
+        "'docx_parse_eval.adapters' entry point (default: docling)",
     )
     pr.set_defaults(func=_cmd_predict)
 

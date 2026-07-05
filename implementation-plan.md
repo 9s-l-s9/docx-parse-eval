@@ -8,7 +8,7 @@ Companion to `evaluation-framework-spec.md`. Sequencing is dictated by **R8 (sen
 
 ---
 
-## Phase 0 — The contract ✅  ✔ **DONE** (13 tests green via `guix shell -m evaluation/manifest.scm -- python3 -m pytest`)
+## Phase 0 — The contract ✅  ✔ **DONE** (13 tests green via `guix shell -m manifest.scm -- python3 -m pytest`; the manifest lives at the repo root, not `evaluation/`)
 Decide before writing adapters, because the schema is what keeps the comparator dumb.
 - [x] Finalise the **model-agnostic `EvaluationRecord`** schema (+ sub-records); freeze `schema_version = "0.1"`. → `src/docx_parse_eval/schema.py` (Pydantic v2, `extra="forbid"`, `ElementType` closed alphabet).
 - [x] Implement the **shared normalisation** function (Unicode NFC, whitespace collapse). → `src/docx_parse_eval/normalize.py` (+ shared `word_count`/`char_count_normalized`/`extract_identifier_tokens`). Residual-syntax strip is adapter-local, deferred to Phase 2.
@@ -231,7 +231,7 @@ The sensitivity half (§6.1) — usually the missing one. Each mutation is a **p
 - [x] **MLflow wired as an *optional, import-guarded* hook** (`mlflow_log`): logs params + per-doc metrics + `flag_count` + the §11 files as artifacts when mlflow is present, **no-ops otherwise**. `mlflow` is **not in Guix** (heavy dep tree) → not added to `manifest.scm`; it stays a local/maintainer overlay, consistent with §11 (files are source of truth). Per spec §10, the deterministic checks stay plain tracking (no `mlflow.genai`).
 - [x] **Calibrate flag thresholds (δ, ε, NED, Jaccard, seq-distance) on fixtures** → `tests/test_calibration.py` pins each threshold's boundary (sub-threshold stays quiet = no false alarm on formatting-scale noise; supra-threshold fires). `config.py` now points to this calibration record. Values stay first-pass until real-corpus-derived synthetic fixtures refine them (Phase 5 feedback loop, R8).
 - [ ] **HF dataset bundle** — deferred until a 2nd adapter/producer is added (§13).
-- [ ] **(Optional) Flattened element-level table** (§11) + **snapshot tier** — deferred.
+- [ ] **(Optional) Flattened element-level table** (§11) — deferred. ~~Snapshot tier~~ → **done later** (`cli.py snapshot`, see the 2026-07-02 workflow-hardening entry below).
 - [x] **End-to-end runner** → `src/docx_parse_eval/cli.py` (`docx-parse-eval` console script). Subcommands `bootstrap` (Script 1 → silver), `predict` (Script 2 → prediction), `compare` (Script 3 → CSV/Parquet + optional `--mlflow`). `compare` **exits non-zero when any flag fires** → CI flag gate. Tested (`test_cli.py`) + smoke-run verified. Documented in `README.md`.
 
 ### Known gaps surfaced by the full public corpus (26 fixtures) — feed Phase 2 maintenance

@@ -61,6 +61,11 @@ docx-parse-eval bless work/my_document.silver.json --out .     # → gold/my_doc
 # 3. project the Docling output into the same schema; --source binds the
 #    prediction to the .docx bytes so compare enforces source identity (R7)
 docx-parse-eval predict dl/my_document.json --out pred/ --source my_document.docx
+# (--source is required; pass --allow-unknown-source only when the .docx truly
+#  isn't available here — compare then can't enforce R7, only warn.
+#  Other parsers plug in via `--adapter NAME`: ship a module with
+#  `extract(json_path, **kw) -> EvaluationRecord` and register it under the
+#  `docx_parse_eval.adapters` entry-point group.)
 
 # 4. diff the two sides — non-zero exit iff any defect flag fires
 docx-parse-eval compare --gold gold/my_document.json \
@@ -115,7 +120,7 @@ G="guix shell -m manifest.scm -- env PYTHONPATH=src python3 -m docx_parse_eval.c
 $G bootstrap path/to.docx --out work/          # Script 1 → <doc>.silver.json
 $G bless     work/<doc>.silver.json --out .    # human-verified → gold/<doc>.json (R7 hash check)
 $G reconcile --gold gold/<doc>.json --draft work/<doc>.silver.json   # R6 field-level diff
-$G predict   path/to.docling.json --out pred/  # Script 2 → <doc>.<producer>.json
+$G predict   path/to.docling.json --source path/to.docx --out pred/  # Script 2 → <doc>.<producer>.json
 $G compare --gold gold/<doc>.json --pred pred/<doc>.<producer>.json --out results/ [--mlflow]
 $G run --manifest corpus.json --out results/   # compare over the whole corpus, one table
 $G snapshot pred/<doc>.<producer>.json         # drift tier: content hash vs baseline
