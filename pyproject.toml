@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: XML",
     "Topic :: Software Development :: Quality Assurance",
 ]
-# Runtime deps are provisioned via Guix (see evaluation/manifest.scm), not pip.
+# Runtime deps are provisioned via Guix (see manifest.scm at the repo root), not pip.
 # Listed here for documentation / non-Guix installs.
 dependencies = [
     "pydantic>=2",
