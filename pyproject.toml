@@ -22,6 +22,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: XML",
     "Topic :: Software Development :: Quality Assurance",
 ]
+
 # Runtime deps are provisioned via Guix (see manifest.scm at the repo root), not pip.
 # Listed here for documentation / non-Guix installs.
 dependencies = [
@@ -35,6 +36,11 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/9s-l-s9/docx-parse-eval"
+Repository = "https://github.com/9s-l-s9/docx-parse-eval"
+Issues = "https://github.com/9s-l-s9/docx-parse-eval/issues"
 
 # PEP 735 — `uv sync` installs these by default; `uv run pytest` just works.
 [dependency-groups]
