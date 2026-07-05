@@ -18,10 +18,20 @@ that must be excluded** from the projection.
 
 Real `.docx` sources + their maintainer-blessed `DoclingDocument` groundtruth
 JSON, vendored from **docling-project/docling @ `6395151e271277d4a154e7e7f01c71fd72829482`**,
-`tests/data/docx/{sources,groundtruth}/` (schema **v1.10.0**). **All 26** docx
-fixtures with groundtruth are vendored as `<name>.docx` + `<name>.docling.json`
-(checkboxes, comments, external/grouped/VML/EMF images, lists, rich cells/tables,
-drawingml, OMML equations, textbox, formatting, headers, …). Upstream licence: MIT.
+`tests/data/docx/{sources,groundtruth}/` (schema **v1.10.0**), as
+`<name>.docx` + `<name>.docling.json`. Upstream licence: MIT.
+
+A **curated subset of 6** pairs is vendored, one per distinct hard path:
+`word_tables` (rich/nested tables — the only pair with specific assertions),
+`word_sample` (general document), `textbox`, `docx_grouped_images`,
+`docx_lists`, `unit_test_headers_numbered`. The full upstream corpus (26 pairs)
+was vendored initially; every bug it caught is preserved as a distilled
+synthetic fixture or hard-case test (see `tests/test_hard_cases.py`,
+`build_sdt_table.py`, `build_textbox.py`), so the remaining 20 pairs only
+duplicated the generic "both adapters parse it" check and were dropped to keep
+the repo small. To test against more, fetch any pair from the commit above into
+`../public/` — `tests/test_public_docling.py` picks up `*.docx`+`*.docling.json`
+pairs automatically.
 
 These drive `tests/test_public_docling.py`. **They caught a real bug** the
 authored `mini.docling.json` missed: a real DoclingDocument is a deep **tree**
